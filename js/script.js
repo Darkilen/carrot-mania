@@ -11,6 +11,35 @@ let H = canvas.height;
 
 
 
+
+
+/* ASSETS */
+let mainTitleImg = new Image();
+mainTitleImg.src = 'assets/main-title.png';
+
+let bgGameImg = new Image();
+bgGameImg.src = 'assets/bg-game.png';
+
+let carrotImg = new Image();
+carrotImg.src = 'assets/carrot.png';
+
+let ladderImg = new Image();
+ladderImg.src = 'assets/ladder.png';
+
+let ground1Img = new Image();
+ground1Img.src = 'assets/ground-1.png';
+
+let ground2Img = new Image();
+ground2Img.src = 'assets/ground-2.png';
+
+
+
+
+
+
+
+
+
 /* GAME */
 let GAMEWIDTH = 840;
 let GAMEHEIGHT = 680;
@@ -36,32 +65,32 @@ function changeGameState() {
 /* currentLevels */
 let currentLevelId = 1;
 let currentLevel = levels[currentLevelId - 1];
+let maxLevelCarrots = currentLevel.carrots.length;
 
 /* function that draws the game level */
 function drawLevel() {
+  ctx.drawImage(bgGameImg, 0, 0);
+
   currentLevel.platforms.forEach((platform) => {
     let x = platform.x;
     let y = platform.y;
-    ctx.beginPath();
-    ctx.fillStyle = "#8E3F03";
-    ctx.fillRect((x) * SQUARESIZE, (y) * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-    ctx.closePath();
+    if (thereIsAPlatform(x, y - 1)) {
+      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
+    } else {
+      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
+    }
   });
+
   currentLevel.ladders.forEach((ladder) => {
     let x = ladder.x;
     let y = ladder.y;
-    ctx.beginPath();
-    ctx.fillStyle = "#DCB000";
-    ctx.fillRect((x) * SQUARESIZE, (y) * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-    ctx.closePath();
+    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
   });
+
   currentLevel.carrots.forEach((carrot) => {
     let x = carrot.x;
     let y = carrot.y;
-    ctx.beginPath();
-    ctx.fillStyle = "#FE9301";
-    ctx.fillRect((x) * SQUARESIZE, (y) * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-    ctx.closePath();
+    ctx.drawImage(carrotImg, x * SQUARESIZE, y * SQUARESIZE);
   });
 }
 
@@ -114,9 +143,7 @@ document.addEventListener("keyup", function() {
 /* function that draws the main title screen */
 function drawMainTitleScreen() {
   canvas.width = 938;
-  let img = new Image();
-  img.src = "assets/main-title.png";
-  ctx.drawImage(img, -3, 0);
+  ctx.drawImage(mainTitleImg, -3, 0);
 }
 
 /* function that draws the loading level screen */
@@ -139,7 +166,7 @@ function drawGameScreen() {
 function drawGameInfos() {
   ctx.font = '15px Courier New';
   let textLevel = `Level : ${currentLevelId}`;
-  let textCarrots = `Carrots : ${rabbitCarrots} / ${currentLevel.carrots.length - 1}`;
+  let textCarrots = `Carrots : ${rabbitCarrots} / ${maxLevelCarrots}`;
   let textLives = `Lives : ${rabbitLives} / 3`;
   ctx.fillText(textLevel, 900, 100);
   ctx.fillText(textCarrots, 900, 200);
@@ -176,7 +203,7 @@ let rabbitCarrots = 0;
 /* function that draws the rabbit */
 function drawRabbit() {
   ctx.beginPath();
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "grey";
   ctx.fillRect(rabbitX * SQUARESIZE, rabbitY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
   ctx.closePath();
 }
@@ -257,11 +284,13 @@ function thereIsALadder(x, y) {
 
 /* function that making the rabbit eat the carrot */
 function rabbitEatCarrot() {
-  let a = currentLevel.carrots;
-
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].x === rabbitX && a[i].y === rabbitY) {
-      console.log("MANGE !");
+  for (let i = 0; i < currentLevel.carrots.length; i++) {
+    if (currentLevel.carrots[i].x === rabbitX && currentLevel.carrots[i].y === rabbitY) {
+      rabbitCarrots++;
+      let pos = currentLevel.carrots.findIndex((element) => {
+        return element.x === rabbitX && element.y === rabbitY;
+      });
+      currentLevel.carrots.splice(pos, 1);
     }
   }
 }
