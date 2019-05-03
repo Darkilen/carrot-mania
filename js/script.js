@@ -183,6 +183,21 @@ function drawGameGrid() {
   }
 }
 
+/* function that change the level variables */
+function changeLevel() {
+  rabbitLives = 3;
+  rabbitCarrots = 0;
+  currentLevelId++;
+  currentLevel = levels[currentLevelId - 1];
+  maxLevelCarrots = currentLevel.carrots.length;
+  rabbitX = currentLevel.rabbit.x;
+  rabbitY = currentLevel.rabbit.y;
+  rabbitVX = 0;
+  rabbitVY = 0;
+  gameState = 'LoadingLevel';
+}
+
+
 
 
 
@@ -223,7 +238,7 @@ function moveRabbit() {
       rabbitCanMove = false;
       rabbitVY = -0.05;
       reCanMoveRabbit();
-    } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && thereIsALadder(rabbitX, rabbitY + 1)) {
+    } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && !thereIsAPlatform(rabbitX, rabbitY + 1)) {
       rabbitCanMove = false;
       rabbitVY = 0.05;
       reCanMoveRabbit();
@@ -247,7 +262,7 @@ function reCanMoveRabbit() {
 function rabbitCanFall() {
   let noPlatformUnderRabbit = !thereIsAPlatform(rabbitX, rabbitY + 1);
   let noLadderUnderRabbit = !thereIsALadder(rabbitX, rabbitY + 1);
-  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit) {
+  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && !thereIsALadder(rabbitX, rabbitY)) {
     rabbitVY = 0.5;
     return true;
   } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit)) {
@@ -291,6 +306,9 @@ function rabbitEatCarrot() {
         return element.x === rabbitX && element.y === rabbitY;
       });
       currentLevel.carrots.splice(pos, 1);
+    }
+    if (currentLevel.carrots.length === 0) {
+      changeLevel();
     }
   }
 }
