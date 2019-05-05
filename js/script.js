@@ -32,6 +32,14 @@ ground1Img.src = 'assets/ground-1.png';
 let ground2Img = new Image();
 ground2Img.src = 'assets/ground-2.png';
 
+let rabbitLeft = new Image();
+rabbitLeft.src = 'assets/rabbitLeft.png';
+let rabbitRight = new Image();
+rabbitRight.src = 'assets/rabbitRight.png';
+let rabbitUp = new Image();
+rabbitUp.src = 'assets/rabbitUp.png';
+let rabbitDown = new Image();
+rabbitDown.src = 'assets/rabbitDown.png';
 
 
 
@@ -156,6 +164,26 @@ function drawLoadingLevelScreen() {
   ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
 }
 
+/* function that draws the game over screen */
+function drawGameOverScreen() {
+  canvas.width = 1200;
+  ctx.font = '48px Courier New';
+  ctx.textAlign = 'Center';
+  let text = `Game Over...`;
+  let measure = ctx.measureText(text);
+  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+}
+
+/* function that draws the game over screen */
+function drawWinGameScreen() {
+  canvas.width = 1200;
+  ctx.font = '48px Courier New';
+  ctx.textAlign = 'Center';
+  let text = `You Win !!!`;
+  let measure = ctx.measureText(text);
+  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+}
+
 /* function that draws the game screen */
 function drawGameScreen() {
   drawLevel();
@@ -185,16 +213,21 @@ function drawGameGrid() {
 
 /* function that change the level variables */
 function changeLevel() {
-  rabbitLives = 3;
-  rabbitCarrots = 0;
-  currentLevelId++;
-  currentLevel = levels[currentLevelId - 1];
-  maxLevelCarrots = currentLevel.carrots.length;
-  rabbitX = currentLevel.rabbit.x;
-  rabbitY = currentLevel.rabbit.y;
-  rabbitVX = 0;
-  rabbitVY = 0;
-  gameState = 'LoadingLevel';
+  if (levels[currentLevelId] === undefined) {
+    gameState = 'WinGame';
+  } else {
+    rabbitLives = 3;
+    rabbitCarrots = 0;
+    currentLevelId++;
+    currentLevel = levels[currentLevelId - 1];
+    maxLevelCarrots = currentLevel.carrots.length;
+    rabbitX = currentLevel.rabbit.x;
+    rabbitY = currentLevel.rabbit.y;
+    rabbitVX = 0;
+    rabbitVY = 0;
+    rabbitDirection = 'right';
+    gameState = 'LoadingLevel';
+  }
 }
 
 
@@ -211,37 +244,75 @@ let rabbitY = currentLevel.rabbit.y;
 let rabbitVX = 0;
 let rabbitVY = 0;
 
+let rabbitDirection = 'right'; // 'up', 'down', 'left' or 'right'
+
 let rabbitCanMove = true;
 let rabbitLives = 3;
 let rabbitCarrots = 0;
 
 /* function that draws the rabbit */
 function drawRabbit() {
-  ctx.beginPath();
-  ctx.fillStyle = "grey";
-  ctx.fillRect(rabbitX * SQUARESIZE, rabbitY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-  ctx.closePath();
+  switch (rabbitDirection) {
+    case 'left':
+      ctx.drawImage(rabbitLeft, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'right':
+      ctx.drawImage(rabbitRight, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'up':
+      ctx.drawImage(rabbitUp, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'down':
+      ctx.drawImage(rabbitDown, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+  }
 }
 
 /* function that makes move the rabbit */
 function moveRabbit() {
   if (!rabbitCanFall()) {
     if (leftPressed && rabbitCanMove && rabbitX > 0 && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVX = -0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'left') {
+        rabbitCanMove = false;
+        rabbitVX = -0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'left';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
     } else if (rightPressed && rabbitCanMove && rabbitX + 1 < NB_COLS && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVX = 0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'right') {
+        rabbitCanMove = false;
+        rabbitVX = 0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'right';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
     } else if (upPressed && rabbitCanMove && rabbitY - 1 > 0 && thereIsALadder(rabbitX, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVY = -0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'up') {
+        rabbitCanMove = false;
+        rabbitVY = -0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'up';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
     } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && !thereIsAPlatform(rabbitX, rabbitY + 1)) {
-      rabbitCanMove = false;
-      rabbitVY = 0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'down') {
+        rabbitCanMove = false;
+        rabbitVY = 0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'down';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
+    } else if (spacePressed && rabbitCanMove) {
+      rabbitDigsAHole(rabbitDirection);
     }
   }
   changePosRabbit();
@@ -313,6 +384,37 @@ function rabbitEatCarrot() {
   }
 }
 
+/* function that making the rabbit digs a hole on the ground */
+function rabbitDigsAHole(rabbitDirection) {
+  if (rabbitDirection === 'left' && thereIsAPlatform(rabbitX - 1, rabbitY + 1)) {
+    rabbitCanMove = false;
+
+    let pos = currentLevel.platforms.findIndex((element) => {
+      return element.x === rabbitX - 1 && element.y === rabbitY + 1;
+    });
+    let platform = currentLevel.platforms[pos];
+    currentLevel.platforms.splice(pos, 1);
+    let timeOut = setTimeout(function() {
+      currentLevel.platforms.push(platform);
+    }, 7000);
+
+    reCanMoveRabbit();
+  } else if (rabbitDirection === 'right' && thereIsAPlatform(rabbitX + 1, rabbitY + 1)) {
+    rabbitCanMove = false;
+
+    let pos = currentLevel.platforms.findIndex((element) => {
+      return element.x === rabbitX + 1 && element.y === rabbitY + 1;
+    });
+    let platform = currentLevel.platforms[pos];
+    currentLevel.platforms.splice(pos, 1);
+    let timeOut = setTimeout(function() {
+      currentLevel.platforms.push(platform);
+    }, 7000);
+
+    reCanMoveRabbit();
+  }
+}
+
 
 
 
@@ -345,6 +447,8 @@ function update() {
     drawGameInfos();
   } else if (gameState === 'GameOver') {
     drawGameOverScreen();
+  } else if (gameState === 'WinGame') {
+    drawWinGameScreen();
   }
 }
 
