@@ -48,6 +48,7 @@ rabbitDown.src = 'assets/rabbitDown.png';
 
 
 
+
 /* GAME */
 let GAMEWIDTH = 840;
 let GAMEHEIGHT = 680;
@@ -76,25 +77,25 @@ let currentLevel = levels[currentLevelId - 1];
 let maxLevelCarrots = currentLevel.carrots.length;
 
 /* function that draws the game level */
-function drawLevel() {
+function drawGameScreen() {
+  drawGameBackground();
+
+  drawGameCarrots();
+
+  drawGameLadders();
+
+  drawRabbit();
+
+  drawGamePlatforms();
+}
+
+/* function that draws the game background */
+function drawGameBackground() {
   ctx.drawImage(bgGameImg, 0, 0);
+}
 
-  currentLevel.platforms.forEach((platform) => {
-    let x = platform.x;
-    let y = platform.y;
-    if (thereIsAPlatform(x, y - 1)) {
-      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
-    } else {
-      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
-    }
-  });
-
-  currentLevel.ladders.forEach((ladder) => {
-    let x = ladder.x;
-    let y = ladder.y;
-    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
-  });
-
+/* function that draws the game carrots */
+function drawGameCarrots() {
   currentLevel.carrots.forEach((carrot) => {
     let x = carrot.x;
     let y = carrot.y;
@@ -102,6 +103,28 @@ function drawLevel() {
   });
 }
 
+/* function that draws the game ladders */
+function drawGameLadders() {
+  currentLevel.ladders.forEach((ladder) => {
+    let x = ladder.x;
+    let y = ladder.y;
+    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
+  });
+}
+
+/* function that draws the game platforms */
+function drawGamePlatforms() {
+  currentLevel.platforms.forEach((platform) => {
+    let x = platform.x;
+    let y = platform.y;
+    let image = platform.image;
+    if (image === "ground-2") {
+      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
+    } else {
+      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
+    }
+  });
+}
 
 /* BUTTONS */
 let upPressed = false;
@@ -165,16 +188,6 @@ function drawLoadingLevelScreen() {
 }
 
 /* function that draws the game over screen */
-function drawGameOverScreen() {
-  canvas.width = 1200;
-  ctx.font = '48px Courier New';
-  ctx.textAlign = 'Center';
-  let text = `Game Over...`;
-  let measure = ctx.measureText(text);
-  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
-}
-
-/* function that draws the game over screen */
 function drawWinGameScreen() {
   canvas.width = 1200;
   ctx.font = '48px Courier New';
@@ -184,10 +197,14 @@ function drawWinGameScreen() {
   ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
 }
 
-/* function that draws the game screen */
-function drawGameScreen() {
-  drawLevel();
-  drawRabbit();
+/* function that draws the loose game screen */
+function drawLooseGameScreen() {
+  canvas.width = 1200;
+  ctx.font = '48px Courier New';
+  ctx.textAlign = 'Center';
+  let text = `You Loose !!!`;
+  let measure = ctx.measureText(text);
+  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
 }
 
 /* function that draws the game infos */
@@ -333,10 +350,11 @@ function reCanMoveRabbit() {
 function rabbitCanFall() {
   let noPlatformUnderRabbit = !thereIsAPlatform(rabbitX, rabbitY + 1);
   let noLadderUnderRabbit = !thereIsALadder(rabbitX, rabbitY + 1);
-  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && !thereIsALadder(rabbitX, rabbitY)) {
+  let noLadderBehindRabbit = !thereIsALadder(rabbitX, rabbitY);
+  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && noLadderBehindRabbit && rabbitY + 1 < NB_ROWS) {
     rabbitVY = 0.5;
     return true;
-  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit)) {
+  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit || rabbitY + 1 >= NB_ROWS)) {
     rabbitVY = 0;
     return false;
   }
@@ -386,7 +404,7 @@ function rabbitEatCarrot() {
 
 /* function that making the rabbit digs a hole on the ground */
 function rabbitDigsAHole(rabbitDirection) {
-  if (rabbitDirection === 'left' && thereIsAPlatform(rabbitX - 1, rabbitY + 1)) {
+  if (rabbitDirection === 'left' && thereIsAPlatform(rabbitX - 1, rabbitY + 1) && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
     rabbitCanMove = false;
 
     let pos = currentLevel.platforms.findIndex((element) => {
@@ -396,10 +414,13 @@ function rabbitDigsAHole(rabbitDirection) {
     currentLevel.platforms.splice(pos, 1);
     let timeOut = setTimeout(function() {
       currentLevel.platforms.push(platform);
+      if (platform.x === rabbitX && platform.y === rabbitY) {
+        restartLevel();
+      }
     }, 7000);
 
     reCanMoveRabbit();
-  } else if (rabbitDirection === 'right' && thereIsAPlatform(rabbitX + 1, rabbitY + 1)) {
+  } else if (rabbitDirection === 'right' && thereIsAPlatform(rabbitX + 1, rabbitY + 1) && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
     rabbitCanMove = false;
 
     let pos = currentLevel.platforms.findIndex((element) => {
@@ -409,13 +430,24 @@ function rabbitDigsAHole(rabbitDirection) {
     currentLevel.platforms.splice(pos, 1);
     let timeOut = setTimeout(function() {
       currentLevel.platforms.push(platform);
+      if (platform.x === rabbitX && platform.y === rabbitY) {
+        restartLevel();
+      }
     }, 7000);
 
     reCanMoveRabbit();
   }
 }
 
-
+function restartLevel() {
+  rabbitLives--;
+  if (rabbitLives === 0) {
+    gameState = 'LooseGame';
+  } else {
+    rabbitX = currentLevel.rabbit.x;
+    rabbitY = currentLevel.rabbit.y;
+  }
+}
 
 
 
@@ -445,10 +477,10 @@ function update() {
     moveRabbit();
     drawGameScreen();
     drawGameInfos();
-  } else if (gameState === 'GameOver') {
-    drawGameOverScreen();
   } else if (gameState === 'WinGame') {
     drawWinGameScreen();
+  } else if (gameState === 'LooseGame') {
+    drawLooseGameScreen();
   }
 }
 

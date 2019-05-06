@@ -4,147 +4,195 @@ levels = [{
     "y": 15
   },
   "platforms": [{
+    "image": "ground-1",
     "x": 0,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 9,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 10,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 11,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 12,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 13,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 14,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 15,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 16,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 17,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 18,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 19,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 20,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 10
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 10
   }, {
+    "image": "ground-2",
     "x": 13,
     "y": 9
   }, {
+    "image": "ground-2",
     "x": 14,
     "y": 9
   }, {
+    "image": "ground-2",
     "x": 15,
     "y": 9
   }, {
+    "image": "ground-2",
     "x": 16,
     "y": 9
   }, {
+    "image": "ground-2",
     "x": 17,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 13,
     "y": 8
   }, {
+    "image": "ground-1",
     "x": 14,
     "y": 8
   }, {
+    "image": "ground-1",
     "x": 15,
     "y": 8
   }, {
+    "image": "ground-1",
     "x": 16,
     "y": 8
   }, {
+    "image": "ground-1",
     "x": 17,
     "y": 8
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 9,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 10,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 11,
     "y": 3
   }, {
+    "image": "ground-1",
     "x": 12,
     "y": 3
   }],
@@ -220,129 +268,171 @@ levels = [{
     "y": 3
   },
   "platforms": [{
+    "image": "ground-1",
     "x": 0,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 9,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 10,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 11,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 12,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 13,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 14,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 15,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 16,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 17,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 18,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 19,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 20,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 0,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 9,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 10,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 11,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 12,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 13,
     "y": 9
   }, {
+    "image": "ground-1",
     "x": 0,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 4
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 4
   }],
@@ -415,66 +505,87 @@ levels = [{
     "y": 1
   },
   "platforms": [{
+    "image": "ground-1",
     "x": 0,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 1,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 2,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 3,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 4,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 5,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 6,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 7,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 8,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 9,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 10,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 11,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 12,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 13,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 14,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 15,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 16,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 17,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 18,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 19,
     "y": 16
   }, {
+    "image": "ground-1",
     "x": 20,
     "y": 16
   }],
