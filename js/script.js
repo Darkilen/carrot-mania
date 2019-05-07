@@ -72,7 +72,7 @@ function changeGameState() {
 }
 
 /* currentLevels */
-let currentLevelId = 5;
+let currentLevelId = 1;
 let currentLevel = levels[currentLevelId - 1];
 let maxLevelCarrots = currentLevel.carrots.length;
 
