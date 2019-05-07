@@ -72,7 +72,7 @@ function changeGameState() {
 }
 
 /* currentLevels */
-let currentLevelId = 1;
+let currentLevelId = 5;
 let currentLevel = levels[currentLevelId - 1];
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -308,7 +308,7 @@ function moveRabbit() {
         rabbitCanMove = false;
         reCanMoveRabbit();
       }
-    } else if (upPressed && rabbitCanMove && rabbitY - 1 > 0 && thereIsALadder(rabbitX, rabbitY)) {
+    } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY)) {
       if (rabbitDirection === 'up') {
         rabbitCanMove = false;
         rabbitVY = -0.05;
