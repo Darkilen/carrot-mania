@@ -261,7 +261,11 @@ levels = [{
       "x": 15,
       "y": 15
     }],
-    "foxes": []
+    "foxes": [{
+      "x": 17,
+      "y": 7,
+      "direction": "left"
+    }]
   }, {
     "rabbit": {
       "x": 1,
@@ -491,13 +495,16 @@ levels = [{
     }],
     "foxes": [{
       "x": 0,
-      "y": 8
+      "y": 8,
+      "direction": "right"
     }, {
       "x": 12,
-      "y": 8
+      "y": 8,
+      "direction": "left"
     }, {
       "x": 5,
-      "y": 15
+      "y": 15,
+      "direction": "right"
     }]
   }, {
     "rabbit": {
@@ -818,10 +825,12 @@ levels = [{
     }],
     "foxes": [{
       "x": 9,
-      "y": 4
+      "y": 4,
+      "direction": "left"
     }, {
       "x": 11,
-      "y": 9
+      "y": 9,
+      "direction": "left"
     }]
   },
   {
@@ -1124,16 +1133,20 @@ levels = [{
     }],
     "foxes": [{
       "x": 5,
-      "y": 8
+      "y": 8,
+      "direction": "left"
     }, {
       "x": 15,
-      "y": 10
+      "y": 10,
+      "direction": "right"
     }, {
       "x": 17,
-      "y": 15
+      "y": 15,
+      "direction": "right"
     }, {
       "x": 9,
-      "y": 16
+      "y": 16,
+      "direction": "left"
     }]
   },
   {
@@ -1598,9 +1611,6 @@ levels = [{
       "x": 8,
       "y": 6
     }, {
-      "x": 8,
-      "y": 6
-    }, {
       "x": 7,
       "y": 6
     }, {
@@ -1648,22 +1658,26 @@ levels = [{
     }],
     "foxes": [{
       "x": 17,
-      "y": 0
+      "y": 0,
+      "direction": "left"
     }, {
       "x": 13,
-      "y": 6
+      "y": 6,
+      "direction": "right"
     }, {
       "x": 12,
-      "y": 9
+      "y": 9,
+      "direction": "right"
     }, {
       "x": 7,
-      "y": 14
+      "y": 14,
+      "direction": "left"
     }, {
       "x": 16,
-      "y": 15
+      "y": 15,
+      "direction": "right"
     }]
   }
-
 ]
 
 
