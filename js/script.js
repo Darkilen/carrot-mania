@@ -32,6 +32,15 @@ ground1Img.src = 'assets/ground-1.png';
 let ground2Img = new Image();
 ground2Img.src = 'assets/ground-2.png';
 
+let rabbitLeft = new Image();
+rabbitLeft.src = 'assets/rabbitLeft.png';
+let rabbitRight = new Image();
+rabbitRight.src = 'assets/rabbitRight.png';
+let rabbitUp = new Image();
+rabbitUp.src = 'assets/rabbitUp.png';
+let rabbitDown = new Image();
+rabbitDown.src = 'assets/rabbitDown.png';
+
 
 
 
@@ -64,29 +73,33 @@ function changeGameState() {
 
 /* currentLevels */
 let currentLevelId = 1;
-let currentLevel = levels[currentLevelId - 1];
+let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
+let platformsTimeouts = [];
+
 /* function that draws the game level */
-function drawLevel() {
+function drawGameScreen() {
+  drawGameBackground();
+
+  drawGameCarrots();
+
+  drawGameLadders();
+
+  drawRabbit();
+
+  drawFoxes();
+
+  drawGamePlatforms();
+}
+
+/* function that draws the game background */
+function drawGameBackground() {
   ctx.drawImage(bgGameImg, 0, 0);
+}
 
-  currentLevel.platforms.forEach((platform) => {
-    let x = platform.x;
-    let y = platform.y;
-    if (thereIsAPlatform(x, y - 1)) {
-      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
-    } else {
-      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
-    }
-  });
-
-  currentLevel.ladders.forEach((ladder) => {
-    let x = ladder.x;
-    let y = ladder.y;
-    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
-  });
-
+/* function that draws the game carrots */
+function drawGameCarrots() {
   currentLevel.carrots.forEach((carrot) => {
     let x = carrot.x;
     let y = carrot.y;
@@ -94,6 +107,28 @@ function drawLevel() {
   });
 }
 
+/* function that draws the game ladders */
+function drawGameLadders() {
+  currentLevel.ladders.forEach((ladder) => {
+    let x = ladder.x;
+    let y = ladder.y;
+    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
+  });
+}
+
+/* function that draws the game platforms */
+function drawGamePlatforms() {
+  currentLevel.platforms.forEach((platform) => {
+    let x = platform.x;
+    let y = platform.y;
+    let image = platform.image;
+    if (image === "ground-2") {
+      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
+    } else {
+      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
+    }
+  });
+}
 
 /* BUTTONS */
 let upPressed = false;
@@ -150,21 +185,39 @@ function drawMainTitleScreen() {
 function drawLoadingLevelScreen() {
   canvas.width = 1200;
   ctx.font = '48px Courier New';
+  ctx.fillStyle = "black";
   ctx.textAlign = 'Center';
   let text = `LoadingLevel : ${currentLevelId}`;
   let measure = ctx.measureText(text);
   ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
 }
 
-/* function that draws the game screen */
-function drawGameScreen() {
-  drawLevel();
-  drawRabbit();
+/* function that draws the game over screen */
+function drawWinGameScreen() {
+  canvas.width = 1200;
+  ctx.font = '48px Courier New';
+  ctx.fillStyle = "black";
+  ctx.textAlign = 'Center';
+  let text = `You Win !!!`;
+  let measure = ctx.measureText(text);
+  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+}
+
+/* function that draws the loose game screen */
+function drawLooseGameScreen() {
+  canvas.width = 1200;
+  ctx.font = '48px Courier New';
+  ctx.fillStyle = "black";
+  ctx.textAlign = 'Center';
+  let text = `You Loose !!!`;
+  let measure = ctx.measureText(text);
+  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
 }
 
 /* function that draws the game infos */
 function drawGameInfos() {
   ctx.font = '15px Courier New';
+  ctx.fillStyle = "black";
   let textLevel = `Level : ${currentLevelId}`;
   let textCarrots = `Carrots : ${rabbitCarrots} / ${maxLevelCarrots}`;
   let textLives = `Lives : ${rabbitLives} / 3`;
@@ -185,16 +238,58 @@ function drawGameGrid() {
 
 /* function that change the level variables */
 function changeLevel() {
-  rabbitLives = 3;
-  rabbitCarrots = 0;
-  currentLevelId++;
-  currentLevel = levels[currentLevelId - 1];
-  maxLevelCarrots = currentLevel.carrots.length;
-  rabbitX = currentLevel.rabbit.x;
-  rabbitY = currentLevel.rabbit.y;
-  rabbitVX = 0;
-  rabbitVY = 0;
-  gameState = 'LoadingLevel';
+  clearPlatformsTimeouts();
+  if (levels[currentLevelId] === undefined) {
+    gameState = 'WinGame';
+  } else {
+    currentLevelId++;
+    currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
+    maxLevelCarrots = currentLevel.carrots.length;
+
+    rabbitLives = 3;
+    rabbitCarrots = 0;
+    rabbitX = currentLevel.rabbit.x;
+    rabbitY = currentLevel.rabbit.y;
+    rabbitVX = 0;
+    rabbitVY = 0;
+    rabbitDirection = 'right';
+
+    initialiseFoxes();
+
+    gameState = 'LoadingLevel';
+  }
+}
+
+/* function that reset the level's platforms */
+function resetPlatforms() {
+  currentLevel.platforms = [];
+  console.log(currentLevel.platforms);
+  currentLevel.platforms = JSON.parse(JSON.stringify(levels[currentLevelId - 1].platforms));
+  console.log(currentLevel.platforms);
+}
+
+/* function that makes the restart of the level */
+function restartLevel() {
+  rabbitLives--;
+
+  clearPlatformsTimeouts();
+
+  resetPlatforms();
+
+  if (rabbitLives === 0) {
+    gameState = 'LooseGame';
+  } else {
+    rabbitDirection = 'right';
+    rabbitX = currentLevel.rabbit.x;
+    rabbitY = currentLevel.rabbit.y;
+  }
+}
+
+/* function that clears the platforms timeouts */
+function clearPlatformsTimeouts() {
+  for (let i = 0; i < platformsTimeouts.length; i++) {
+    clearTimeout(platformsTimeouts[i]);
+  }
 }
 
 
@@ -211,37 +306,75 @@ let rabbitY = currentLevel.rabbit.y;
 let rabbitVX = 0;
 let rabbitVY = 0;
 
+let rabbitDirection = 'right'; // 'up', 'down', 'left' or 'right'
+
 let rabbitCanMove = true;
 let rabbitLives = 3;
 let rabbitCarrots = 0;
 
 /* function that draws the rabbit */
 function drawRabbit() {
-  ctx.beginPath();
-  ctx.fillStyle = "grey";
-  ctx.fillRect(rabbitX * SQUARESIZE, rabbitY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-  ctx.closePath();
+  switch (rabbitDirection) {
+    case 'left':
+      ctx.drawImage(rabbitLeft, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'right':
+      ctx.drawImage(rabbitRight, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'up':
+      ctx.drawImage(rabbitUp, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+    case 'down':
+      ctx.drawImage(rabbitDown, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      break;
+  }
 }
 
 /* function that makes move the rabbit */
 function moveRabbit() {
   if (!rabbitCanFall()) {
     if (leftPressed && rabbitCanMove && rabbitX > 0 && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVX = -0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'left') {
+        rabbitCanMove = false;
+        rabbitVX = -0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'left';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
     } else if (rightPressed && rabbitCanMove && rabbitX + 1 < NB_COLS && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVX = 0.05;
-      reCanMoveRabbit();
-    } else if (upPressed && rabbitCanMove && rabbitY - 1 > 0 && thereIsALadder(rabbitX, rabbitY)) {
-      rabbitCanMove = false;
-      rabbitVY = -0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'right') {
+        rabbitCanMove = false;
+        rabbitVX = 0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'right';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
+    } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY)) {
+      if (rabbitDirection === 'up') {
+        rabbitCanMove = false;
+        rabbitVY = -0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'up';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
     } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && !thereIsAPlatform(rabbitX, rabbitY + 1)) {
-      rabbitCanMove = false;
-      rabbitVY = 0.05;
-      reCanMoveRabbit();
+      if (rabbitDirection === 'down') {
+        rabbitCanMove = false;
+        rabbitVY = 0.05;
+        reCanMoveRabbit();
+      } else {
+        rabbitDirection = 'down';
+        rabbitCanMove = false;
+        reCanMoveRabbit();
+      }
+    } else if (spacePressed && rabbitCanMove) {
+      rabbitDigsAHole(rabbitDirection);
     }
   }
   changePosRabbit();
@@ -262,10 +395,12 @@ function reCanMoveRabbit() {
 function rabbitCanFall() {
   let noPlatformUnderRabbit = !thereIsAPlatform(rabbitX, rabbitY + 1);
   let noLadderUnderRabbit = !thereIsALadder(rabbitX, rabbitY + 1);
-  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && !thereIsALadder(rabbitX, rabbitY)) {
+  let noLadderBehindRabbit = !thereIsALadder(rabbitX, rabbitY);
+  let noFoxUnderRabbit = !thereIsAFox(rabbitX, rabbitY + 1);
+  if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && noLadderBehindRabbit && noFoxUnderRabbit && rabbitY + 1 < NB_ROWS) {
     rabbitVY = 0.5;
     return true;
-  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit)) {
+  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit || rabbitY + 1 >= NB_ROWS)) {
     rabbitVY = 0;
     return false;
   }
@@ -297,6 +432,16 @@ function thereIsALadder(x, y) {
   return false;
 }
 
+/* function that returns true if there is a rabbit, false if not */
+function thereIsAFox(x, y) {
+  for (let i = 0; i < foxes.length; i++) {
+    if (foxes[i].foxX === x && foxes[i].foxY === y) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /* function that making the rabbit eat the carrot */
 function rabbitEatCarrot() {
   for (let i = 0; i < currentLevel.carrots.length; i++) {
@@ -313,9 +458,199 @@ function rabbitEatCarrot() {
   }
 }
 
+/* function that making the rabbit digs a hole on the ground */
+function rabbitDigsAHole(rabbitDirection) {
+  if (rabbitDirection === 'left' && thereIsAPlatform(rabbitX - 1, rabbitY + 1) && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
+    rabbitCanMove = false;
+
+    let pos = currentLevel.platforms.findIndex((element) => {
+      return element.x === rabbitX - 1 && element.y === rabbitY + 1;
+    });
+
+    let platform = currentLevel.platforms[pos];
+    currentLevel.platforms.splice(pos, 1);
+
+    platformsTimeouts.push(setTimeout(function() {
+      currentLevel.platforms.push(platform);
+      if (platform.x === rabbitX && platform.y === rabbitY) {
+        restartLevel();
+      }
+    }, 7000));
+
+    reCanMoveRabbit();
+  } else if (rabbitDirection === 'right' && thereIsAPlatform(rabbitX + 1, rabbitY + 1) && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
+    rabbitCanMove = false;
+
+    let pos = currentLevel.platforms.findIndex((element) => {
+      return element.x === rabbitX + 1 && element.y === rabbitY + 1;
+    });
+
+    let platform = currentLevel.platforms[pos];
+    currentLevel.platforms.splice(pos, 1);
+
+    platformsTimeouts.push(setTimeout(function() {
+      currentLevel.platforms.push(platform);
+      if (platform.x === rabbitX && platform.y === rabbitY) {
+        restartLevel();
+      }
+    }, 7000));
+
+    reCanMoveRabbit();
+  }
+}
 
 
 
+
+
+
+
+
+
+/* FOXES */
+/* FOXES CLASS */
+class Foxes {
+  constructor(foxX, foxY, foxDirection) {
+    this.foxX = foxX;
+    this.foxY = foxY;
+    this.foxVX = 0;
+    this.foxVY = 0;
+
+    this.foxDirection = foxDirection;
+
+    this.foxCanMove = true;
+  }
+
+  /* method that draw fox on the game */
+  drawFox() {
+    ctx.beginPath();
+    ctx.fillStyle = "#FFA500";
+    ctx.fillRect(this.foxX * SQUARESIZE, this.foxY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+    ctx.closePath();
+  }
+
+  /* method that makes move the fox */
+  moveFox() {
+    if (!this.foxCanFall()) {
+      if (this.foxY === NB_ROWS - 1) {
+        if (this.foxDirection === 'right' && !this.thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove) {
+          this.foxCanMove = false;
+          this.foxVX = 0.05;
+          this.reCanMoveFox();
+        } else if (this.foxDirection === 'left' && !this.thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove) {
+          this.foxCanMove = false;
+          this.foxVX = -0.05;
+          this.reCanMoveFox();
+        } else {
+          this.changeFoxDirection();
+        }
+      } else {
+        if (this.foxDirection === 'right' && !this.thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove && (this.thereIsAPlatform(this.foxX + 1, this.foxY + 1) || this.thereIsALadder(this.foxX + 1, this.foxY + 1))) {
+          this.foxCanMove = false;
+          this.foxVX = 0.05;
+          this.reCanMoveFox();
+        } else if (this.foxDirection === 'left' && !this.thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove && (this.thereIsAPlatform(this.foxX - 1, this.foxY + 1) || this.thereIsALadder(this.foxX - 1, this.foxY + 1))) {
+          this.foxCanMove = false;
+          this.foxVX = -0.05;
+          this.reCanMoveFox();
+        } else {
+          this.changeFoxDirection();
+        }
+      }
+    }
+    this.changePosFox();
+  }
+
+
+  /* method that re authorizes the fox to move */
+  reCanMoveFox() {
+    let timeOut = window.setTimeout(() => {
+      this.foxVX = 0;
+      this.foxVY = 0;
+      this.foxCanMove = true;
+      this.foxX = Math.round(this.foxX);
+      this.foxY = Math.round(this.foxY);
+    }, 300);
+  }
+
+  /* function that changes the position of the fox */
+  changePosFox() {
+    this.foxX += this.foxVX;
+    this.foxY += this.foxVY;
+  }
+
+  /* function that changes the direction of the fox */
+  changeFoxDirection() {
+    if (this.foxCanMove) {
+      if (this.foxDirection === 'right') {
+        this.foxDirection = 'left';
+      } else {
+        this.foxDirection = 'right';
+      }
+    }
+  }
+
+  /* method that checks if there is a platform in the levels.js file */
+  thereIsAPlatform(x, y) {
+    for (let i = 0; i < levels[currentLevelId - 1].platforms.length; i++) {
+      if (levels[currentLevelId - 1].platforms[i].x === x && levels[currentLevelId - 1].platforms[i].y === y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /* method that checks if there is a ladder in the levels.js file */
+  thereIsALadder(x, y) {
+    for (let i = 0; i < levels[currentLevelId - 1].ladders.length; i++) {
+      if (levels[currentLevelId - 1].ladders[i].x === x && levels[currentLevelId - 1].ladders[i].y === y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /* method that makes fall the rabbit */
+  foxCanFall() {
+    let noPlatformUnderFox = !thereIsAPlatform(this.foxX, this.foxY + 1);
+    let noLadderUnderFox = !thereIsALadder(this.foxX, this.foxY + 1);
+    let noLadderBehindFox = !thereIsALadder(this.foxX, this.foxY);
+    if (this.foxCanMove && noPlatformUnderFox && noLadderUnderFox && noLadderBehindFox && this.foxY + 1 < NB_ROWS) {
+      this.foxVY = 0.5;
+      return true;
+    } else if (this.foxCanMove && (!noPlatformUnderFox || !noLadderUnderFox || this.foxY + 1 >= NB_ROWS)) {
+      this.foxVY = 0;
+      return false;
+    }
+  }
+}
+
+let foxes;
+initialiseFoxes();
+
+/* function that initialises the foxes array */
+function initialiseFoxes() {
+  foxes = [];
+  let currentFox;
+  for (var i = 0; i < currentLevel.foxes.length; i++) {
+    currentFox = currentLevel.foxes[i];
+    let fox = new Foxes(currentFox.x, currentFox.y, currentFox.direction);
+    foxes.push(fox);
+  }
+}
+
+/* function that draws the foxes on the game */
+function drawFoxes() {
+  for (var i = 0; i < foxes.length; i++) {
+    foxes[i].drawFox();
+  }
+}
+
+function moveFoxes() {
+  for (var i = 0; i < foxes.length; i++) {
+    foxes[i].moveFox();
+  }
+}
 
 
 
@@ -341,10 +676,13 @@ function update() {
   } else if (gameState === 'Game') {
     rabbitEatCarrot();
     moveRabbit();
+    moveFoxes();
     drawGameScreen();
     drawGameInfos();
-  } else if (gameState === 'GameOver') {
-    drawGameOverScreen();
+  } else if (gameState === 'WinGame') {
+    drawWinGameScreen();
+  } else if (gameState === 'LooseGame') {
+    drawLooseGameScreen();
   }
 }
 
