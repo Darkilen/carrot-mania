@@ -72,7 +72,7 @@ function changeGameState() {
 }
 
 /* currentLevels */
-let currentLevelId = 5;
+let currentLevelId = 1;
 let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -547,11 +547,11 @@ class Foxes {
       if (this.foxY === NB_ROWS - 1) {
         if (this.foxDirection === 'right' && !thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove) {
           this.foxCanMove = false;
-          this.foxVX = 0.05;
+          this.foxVX = 0.04;
           this.reCanMoveFox();
         } else if (this.foxDirection === 'left' && !thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove) {
           this.foxCanMove = false;
-          this.foxVX = -0.05;
+          this.foxVX = -0.04;
           this.reCanMoveFox();
         } else {
           this.changeFoxDirection();
@@ -559,11 +559,11 @@ class Foxes {
       } else {
         if (this.foxDirection === 'right' && !this.thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove && (this.thereIsAPlatform(this.foxX + 1, this.foxY + 1) || this.thereIsALadder(this.foxX + 1, this.foxY + 1))) {
           this.foxCanMove = false;
-          this.foxVX = 0.05;
+          this.foxVX = 0.04;
           this.reCanMoveFox();
         } else if (this.foxDirection === 'left' && !this.thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove && (this.thereIsAPlatform(this.foxX - 1, this.foxY + 1) || this.thereIsALadder(this.foxX - 1, this.foxY + 1))) {
           this.foxCanMove = false;
-          this.foxVX = -0.05;
+          this.foxVX = -0.04;
           this.reCanMoveFox();
         } else {
           this.changeFoxDirection();
@@ -582,7 +582,7 @@ class Foxes {
       this.foxCanMove = true;
       this.foxX = Math.round(this.foxX);
       this.foxY = Math.round(this.foxY);
-    }, 300);
+    }, 400);
   }
 
   /* function that changes the position of the fox */
