@@ -72,7 +72,7 @@ function changeGameState() {
 }
 
 /* currentLevels */
-let currentLevelId = 1;
+let currentLevelId = 5;
 let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -380,6 +380,18 @@ function moveRabbit() {
   changePosRabbit();
 }
 
+/* function that detects the collision between the rabbit and the foxes */
+function detectEnemiesCollision() {
+  let currentFox;
+  for (let i = 0; i < foxes.length; i++) {
+    currentFox = foxes[i];
+    if ((rabbitX + 1 > currentFox.foxX && rabbitX + 1 < currentFox.foxX + 1 && rabbitY === currentFox.foxY) || (rabbitX < currentFox.foxX + 1 && rabbitX > currentFox.foxX && rabbitY === currentFox.foxY)) {
+      console.log("COLLISION");
+      restartLevel();
+    }
+  }
+}
+
 /* function that re authorizes the player to making move the rabbit with the arrow keys */
 function reCanMoveRabbit() {
   let timeOut = window.setTimeout(() => {
@@ -533,11 +545,11 @@ class Foxes {
   moveFox() {
     if (!this.foxCanFall()) {
       if (this.foxY === NB_ROWS - 1) {
-        if (this.foxDirection === 'right' && !this.thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove) {
+        if (this.foxDirection === 'right' && !thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove) {
           this.foxCanMove = false;
           this.foxVX = 0.05;
           this.reCanMoveFox();
-        } else if (this.foxDirection === 'left' && !this.thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove) {
+        } else if (this.foxDirection === 'left' && !thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove) {
           this.foxCanMove = false;
           this.foxVX = -0.05;
           this.reCanMoveFox();
@@ -674,6 +686,7 @@ function update() {
       gameState = 'Game';
     }, 700);
   } else if (gameState === 'Game') {
+    detectEnemiesCollision();
     rabbitEatCarrot();
     moveRabbit();
     moveFoxes();
