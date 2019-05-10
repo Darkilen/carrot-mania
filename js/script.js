@@ -5,8 +5,8 @@ let ctx = canvas.getContext('2d');
 let W = canvas.width;
 let H = canvas.height;
 
-
-
+/* MODE NO DRAW */
+let modeNoDraw = true;
 
 
 
@@ -91,11 +91,19 @@ function drawGameScreen() {
   drawFoxes();
 
   drawGamePlatforms();
+
+  if (modeNoDraw) {
+    drawGameGrid();
+  }
 }
 
 /* function that draws the game background */
 function drawGameBackground() {
-  ctx.drawImage(bgGameImg, 0, 0);
+  if (modeNoDraw) {
+
+  } else {
+    ctx.drawImage(bgGameImg, -2, -2, 1205, 683);
+  }
 }
 
 /* function that draws the game carrots */
@@ -103,7 +111,14 @@ function drawGameCarrots() {
   currentLevel.carrots.forEach((carrot) => {
     let x = carrot.x;
     let y = carrot.y;
-    ctx.drawImage(carrotImg, x * SQUARESIZE, y * SQUARESIZE);
+    if (modeNoDraw) {
+      ctx.beginPath();
+      ctx.fillStyle = "#FFA555";
+      ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+      ctx.closePath();
+    } else {
+      ctx.drawImage(carrotImg, x * SQUARESIZE, y * SQUARESIZE);
+    }
   });
 }
 
@@ -112,7 +127,14 @@ function drawGameLadders() {
   currentLevel.ladders.forEach((ladder) => {
     let x = ladder.x;
     let y = ladder.y;
-    ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
+    if (modeNoDraw) {
+      ctx.beginPath();
+      ctx.fillStyle = "#FFFF55";
+      ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+      ctx.closePath();
+    } else {
+      ctx.drawImage(ladderImg, x * SQUARESIZE, y * SQUARESIZE);
+    }
   });
 }
 
@@ -121,11 +143,18 @@ function drawGamePlatforms() {
   currentLevel.platforms.forEach((platform) => {
     let x = platform.x;
     let y = platform.y;
-    let image = platform.image;
-    if (image === "ground-2") {
-      ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
+    if (modeNoDraw) {
+      ctx.beginPath();
+      ctx.fillStyle = "#8B4513";
+      ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+      ctx.closePath();
     } else {
-      ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
+      let image = platform.image;
+      if (image === "ground-2") {
+        ctx.drawImage(ground2Img, x * SQUARESIZE, y * SQUARESIZE);
+      } else {
+        ctx.drawImage(ground1Img, x * SQUARESIZE, y * SQUARESIZE);
+      }
     }
   });
 }
@@ -153,6 +182,8 @@ document.addEventListener("keydown", () => {
     enterPressed = true;
   } else if (event.key == " " || event.key == "Space") {
     spacePressed = true;
+  } else if (event.key == "x" || event.key == "KeyX") {
+    modeNoDraw = !modeNoDraw;
   }
 }, false);
 
@@ -177,8 +208,25 @@ document.addEventListener("keyup", function() {
 /* SCREENS */
 /* function that draws the main title screen */
 function drawMainTitleScreen() {
-  canvas.width = 938;
-  ctx.drawImage(mainTitleImg, -3, 0);
+  if (modeNoDraw) {
+    canvas.width = 1200;
+    ctx.font = '80px Courier New';
+    ctx.fillStyle = "black";
+    ctx.textAlign = 'Center';
+    let text = `Carrot Mania`;
+    let measure = ctx.measureText(text);
+    ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+
+    ctx.font = '35px Courier New';
+    ctx.fillStyle = "black";
+    ctx.textAlign = 'Center';
+    let text2 = `Press Enter to start`;
+    let measure2 = ctx.measureText(text2);
+    ctx.fillText(text2, W / 2 - measure2.width / 2, H / 2 + 70);
+  } else {
+    canvas.width = 938;
+    ctx.drawImage(mainTitleImg, -3, 0);
+  }
 }
 
 /* function that draws the loading level screen */
@@ -216,14 +264,25 @@ function drawLooseGameScreen() {
 
 /* function that draws the game infos */
 function drawGameInfos() {
-  ctx.font = '15px Courier New';
-  ctx.fillStyle = "black";
-  let textLevel = `Level : ${currentLevelId}`;
-  let textCarrots = `Carrots : ${rabbitCarrots} / ${maxLevelCarrots}`;
-  let textLives = `Lives : ${rabbitLives} / 3`;
-  ctx.fillText(textLevel, 900, 100);
-  ctx.fillText(textCarrots, 900, 200);
-  ctx.fillText(textLives, 900, 300);
+  if (modeNoDraw) {
+    ctx.font = '15px Courier New';
+    ctx.fillStyle = "black";
+    let textLevel = `Level : ${currentLevelId}`;
+    let textCarrots = `Carrots : ${rabbitCarrots} / ${maxLevelCarrots}`;
+    let textLives = `Lives : ${rabbitLives} / 3`;
+    ctx.fillText(textLevel, 900, 100);
+    ctx.fillText(textCarrots, 900, 200);
+    ctx.fillText(textLives, 900, 300);
+  } else {
+    ctx.font = '30px Courier New';
+    ctx.fillStyle = "orange";
+    let textLevel = `${currentLevelId} / ${levels.length}`;
+    let textCarrots = `${rabbitCarrots} / ${maxLevelCarrots}`;
+    let textLives = `${rabbitLives} / 3`;
+    ctx.fillText(textLevel, 1070, 227);
+    ctx.fillText(textCarrots, 1070, 347);
+    ctx.fillText(textLives, 1070, 472);
+  }
 }
 
 /*  function that draws the game grid */
@@ -271,6 +330,8 @@ function resetPlatforms() {
 /* function that makes the restart of the level */
 function restartLevel() {
   rabbitLives--;
+
+  initialiseFoxes();
 
   clearPlatformsTimeouts();
 
@@ -487,6 +548,7 @@ function rabbitDigsAHole(rabbitDirection) {
       if (platform.x === rabbitX && platform.y === rabbitY) {
         restartLevel();
       }
+      holeClosedOnFox(platform);
     }, 7000));
 
     reCanMoveRabbit();
@@ -505,6 +567,7 @@ function rabbitDigsAHole(rabbitDirection) {
       if (platform.x === rabbitX && platform.y === rabbitY) {
         restartLevel();
       }
+      holeClosedOnFox(platform);
     }, 7000));
 
     reCanMoveRabbit();
@@ -658,11 +721,16 @@ function drawFoxes() {
   }
 }
 
+/* function that makes moves the foxes */
 function moveFoxes() {
   for (var i = 0; i < foxes.length; i++) {
     foxes[i].moveFox();
   }
 }
+
+
+
+
 
 
 
