@@ -6,7 +6,7 @@ let W = canvas.width;
 let H = canvas.height;
 
 /* MODE NO DRAW */
-let modeNoDraw = true;
+let modeNoDraw = false;
 
 
 
