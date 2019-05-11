@@ -151,7 +151,7 @@ function changeGameState() {
 let noDrawMode = false;
 
 /* currentLevels */
-let currentLevelId = 1;
+let currentLevelId = 3;
 let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -508,6 +508,7 @@ function moveRabbit() {
   if (!rabbitCanFall()) {
     if (leftPressed && rabbitCanMove && rabbitX > 0 && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
       if (rabbitDirection === 'left') {
+        rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
         rabbitVX = -0.05;
@@ -524,6 +525,7 @@ function moveRabbit() {
       }
     } else if (rightPressed && rabbitCanMove && rabbitX + 1 < NB_COLS && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
       if (rabbitDirection === 'right') {
+        rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
         rabbitVX = 0.05;
@@ -540,6 +542,7 @@ function moveRabbit() {
       }
     } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY) && !thereIsAPlatform(rabbitX, rabbitY - 1)) {
       if (rabbitDirection === 'up') {
+        rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
         rabbitVY = -0.05;
@@ -556,6 +559,7 @@ function moveRabbit() {
       }
     } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && !thereIsAPlatform(rabbitX, rabbitY + 1)) {
       if (rabbitDirection === 'down') {
+        rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
         rabbitVY = 0.05;
@@ -570,7 +574,7 @@ function moveRabbit() {
         rabbitCanMove = false;
         reCanMoveRabbit();
       }
-    } else if (spacePressed && rabbitCanMove) {
+    } else if (spacePressed && rabbitCanMove && (rabbitDirection === 'left' || rabbitDirection === 'right')) {
       rabbitCanMove = false;
       rabbitIsMoving = true;
       rabbitSprite.ticksPerFrame = 0;
