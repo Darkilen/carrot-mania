@@ -5,8 +5,62 @@ let ctx = canvas.getContext('2d');
 let W = canvas.width;
 let H = canvas.height;
 
-/* MODE NO DRAW */
-let modeNoDraw = false;
+
+
+
+
+
+
+
+
+/* SPRITES */
+class Sprite {
+  constructor(image, width, height, ticksPerFrame, numberOfFrames) {
+    this.image = image;
+    this.width = width;
+    this.height = height;
+
+    this.frameIndex = 0;
+    this.tickCount = 0;
+    this.ticksPerFrame = ticksPerFrame;
+    this.numberOfFrames = numberOfFrames;
+  }
+
+  render(x, y) {
+    // Draw the animation
+    ctx.drawImage(
+      this.image,
+      this.frameIndex * this.width / this.numberOfFrames,
+      0,
+      this.width / this.numberOfFrames,
+      this.height,
+      x,
+      y,
+      this.width / this.numberOfFrames,
+      this.height
+    );
+  }
+
+  update() {
+    this.tickCount++;
+
+    if (this.tickCount > this.ticksPerFrame) {
+      this.tickCount = 0;
+
+
+      // If the current frame index is in range
+      if (this.frameIndex < this.numberOfFrames - 1) {
+        // go to the next frame
+        this.frameIndex++;
+      } else {
+        this.frameIndex = 0;
+      }
+    }
+  }
+}
+
+
+
 
 
 
@@ -34,13 +88,35 @@ ground2Img.src = 'assets/ground-2.png';
 
 let rabbitLeft = new Image();
 rabbitLeft.src = 'assets/rabbitLeft.png';
+let rabbitLeft2 = new Image();
+rabbitLeft2.src = 'assets/rabbitLeft2.png';
 let rabbitRight = new Image();
 rabbitRight.src = 'assets/rabbitRight.png';
+let rabbitRight2 = new Image();
+rabbitRight2.src = 'assets/rabbitRight2.png';
 let rabbitUp = new Image();
 rabbitUp.src = 'assets/rabbitUp.png';
+let rabbitUp2 = new Image();
+rabbitUp2.src = 'assets/rabbitUp2.png';
 let rabbitDown = new Image();
 rabbitDown.src = 'assets/rabbitDown.png';
+let rabbitDown2 = new Image();
+rabbitDown2.src = 'assets/rabbitDown2.png';
 
+let rabbitWalkLeft = new Image();
+rabbitWalkLeft.src = 'assets/rabbit-walk-left.png';
+let rabbitWalkLeftSprite = new Sprite(rabbitWalkLeft, 160, 40, 0, 4);
+let rabbitWalkRight = new Image();
+rabbitWalkRight.src = 'assets/rabbit-walk-right.png';
+let rabbitWalkRightSprite = new Sprite(rabbitWalkRight, 160, 40, 0, 4);
+
+let foxWalkLeft = new Image();
+foxWalkLeft.src = 'assets/fox-walk-left.png';
+let foxWalkLeftSprite = new Sprite(foxWalkLeft, 160, 40, 0, 4);
+
+let foxWalkRight = new Image();
+foxWalkRight.src = 'assets/fox-walk-right.png';
+let foxWalkRightSprite = new Sprite(foxWalkRight, 160, 40, 0, 4);
 
 
 
@@ -71,8 +147,11 @@ function changeGameState() {
   }
 }
 
+/* no draw mode */
+let noDrawMode = false;
+
 /* currentLevels */
-let currentLevelId = 1;
+let currentLevelId = 2;
 let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -92,14 +171,14 @@ function drawGameScreen() {
 
   drawGamePlatforms();
 
-  if (modeNoDraw) {
+  if (noDrawMode) {
     drawGameGrid();
   }
 }
 
 /* function that draws the game background */
 function drawGameBackground() {
-  if (modeNoDraw) {
+  if (noDrawMode) {
 
   } else {
     ctx.drawImage(bgGameImg, -2, -2, 1205, 683);
@@ -111,7 +190,7 @@ function drawGameCarrots() {
   currentLevel.carrots.forEach((carrot) => {
     let x = carrot.x;
     let y = carrot.y;
-    if (modeNoDraw) {
+    if (noDrawMode) {
       ctx.beginPath();
       ctx.fillStyle = "#FFA555";
       ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
@@ -127,7 +206,7 @@ function drawGameLadders() {
   currentLevel.ladders.forEach((ladder) => {
     let x = ladder.x;
     let y = ladder.y;
-    if (modeNoDraw) {
+    if (noDrawMode) {
       ctx.beginPath();
       ctx.fillStyle = "#FFFF55";
       ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
@@ -143,7 +222,7 @@ function drawGamePlatforms() {
   currentLevel.platforms.forEach((platform) => {
     let x = platform.x;
     let y = platform.y;
-    if (modeNoDraw) {
+    if (noDrawMode) {
       ctx.beginPath();
       ctx.fillStyle = "#8B4513";
       ctx.fillRect(x * SQUARESIZE, y * SQUARESIZE, SQUARESIZE, SQUARESIZE);
@@ -183,7 +262,7 @@ document.addEventListener("keydown", () => {
   } else if (event.key == " " || event.key == "Space") {
     spacePressed = true;
   } else if (event.key == "x" || event.key == "KeyX") {
-    modeNoDraw = !modeNoDraw;
+    noDrawMode = !noDrawMode;
   }
 }, false);
 
@@ -208,7 +287,7 @@ document.addEventListener("keyup", function() {
 /* SCREENS */
 /* function that draws the main title screen */
 function drawMainTitleScreen() {
-  if (modeNoDraw) {
+  if (noDrawMode) {
     canvas.width = 1200;
     ctx.font = '80px Courier New';
     ctx.fillStyle = "black";
@@ -264,7 +343,7 @@ function drawLooseGameScreen() {
 
 /* function that draws the game infos */
 function drawGameInfos() {
-  if (modeNoDraw) {
+  if (noDrawMode) {
     ctx.font = '15px Courier New';
     ctx.fillStyle = "black";
     let textLevel = `Level : ${currentLevelId}`;
@@ -377,16 +456,32 @@ let rabbitCarrots = 0;
 function drawRabbit() {
   switch (rabbitDirection) {
     case 'left':
-      ctx.drawImage(rabbitLeft, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      if (noDrawMode) {
+        ctx.drawImage(rabbitLeft, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      } else {
+        ctx.drawImage(rabbitLeft2, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      }
       break;
     case 'right':
-      ctx.drawImage(rabbitRight, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      if (noDrawMode) {
+        ctx.drawImage(rabbitRight, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      } else {
+        ctx.drawImage(rabbitRight2, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      }
       break;
     case 'up':
-      ctx.drawImage(rabbitUp, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      if (noDrawMode) {
+        ctx.drawImage(rabbitUp, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      } else {
+        ctx.drawImage(rabbitUp2, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      }
       break;
     case 'down':
-      ctx.drawImage(rabbitDown, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      if (noDrawMode) {
+        ctx.drawImage(rabbitDown, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      } else {
+        ctx.drawImage(rabbitDown2, rabbitX * SQUARESIZE, rabbitY * SQUARESIZE);
+      }
       break;
   }
 }
@@ -414,7 +509,7 @@ function moveRabbit() {
         rabbitCanMove = false;
         reCanMoveRabbit();
       }
-    } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY)) {
+    } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY) && !thereIsAPlatform(rabbitX, rabbitY - 1)) {
       if (rabbitDirection === 'up') {
         rabbitCanMove = false;
         rabbitVY = -0.05;
@@ -548,7 +643,6 @@ function rabbitDigsAHole(rabbitDirection) {
       if (platform.x === rabbitX && platform.y === rabbitY) {
         restartLevel();
       }
-      holeClosedOnFox(platform);
     }, 7000));
 
     reCanMoveRabbit();
@@ -567,7 +661,6 @@ function rabbitDigsAHole(rabbitDirection) {
       if (platform.x === rabbitX && platform.y === rabbitY) {
         restartLevel();
       }
-      holeClosedOnFox(platform);
     }, 7000));
 
     reCanMoveRabbit();
@@ -598,10 +691,19 @@ class Foxes {
 
   /* method that draw fox on the game */
   drawFox() {
-    ctx.beginPath();
-    ctx.fillStyle = "#FFA500";
-    ctx.fillRect(this.foxX * SQUARESIZE, this.foxY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
-    ctx.closePath();
+    if (noDrawMode) {
+      ctx.beginPath();
+      ctx.fillStyle = "#FFA500";
+      ctx.fillRect(this.foxX * SQUARESIZE, this.foxY * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+      ctx.closePath();
+    } else {
+      if (this.foxDirection === 'left') {
+        foxWalkLeftSprite.render(this.foxX * SQUARESIZE, this.foxY * SQUARESIZE);
+      }
+      if (this.foxDirection === 'right') {
+        foxWalkRightSprite.render(this.foxX * SQUARESIZE, this.foxY * SQUARESIZE);
+      }
+    }
   }
 
   /* method that makes move the fox */
@@ -611,10 +713,12 @@ class Foxes {
         if (this.foxDirection === 'right' && !thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove) {
           this.foxCanMove = false;
           this.foxVX = 0.04;
+          foxWalkRightSprite.update();
           this.reCanMoveFox();
         } else if (this.foxDirection === 'left' && !thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove) {
           this.foxCanMove = false;
           this.foxVX = -0.04;
+          foxWalkLeftSprite.update();
           this.reCanMoveFox();
         } else {
           this.changeFoxDirection();
@@ -623,10 +727,12 @@ class Foxes {
         if (this.foxDirection === 'right' && !this.thereIsAPlatform(this.foxX + 1, this.foxY) && this.foxX < NB_COLS - 1 && this.foxCanMove && (this.thereIsAPlatform(this.foxX + 1, this.foxY + 1) || this.thereIsALadder(this.foxX + 1, this.foxY + 1))) {
           this.foxCanMove = false;
           this.foxVX = 0.04;
+          foxWalkRightSprite.update();
           this.reCanMoveFox();
         } else if (this.foxDirection === 'left' && !this.thereIsAPlatform(this.foxX - 1, this.foxY) && this.foxX > 0 && this.foxCanMove && (this.thereIsAPlatform(this.foxX - 1, this.foxY + 1) || this.thereIsALadder(this.foxX - 1, this.foxY + 1))) {
           this.foxCanMove = false;
           this.foxVX = -0.04;
+          foxWalkLeftSprite.update();
           this.reCanMoveFox();
         } else {
           this.changeFoxDirection();
