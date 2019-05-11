@@ -391,6 +391,11 @@ function changeLevel() {
     rabbitVX = 0;
     rabbitVY = 0;
     rabbitDirection = 'right';
+    rabbitSprite.image = rabbitWalkRight;
+    rabbitSprite.width = 200;
+    rabbitSprite.height = 40;
+    rabbitSprite.ticksPerFrame = 4;
+    rabbitSprite.numberOfFrames = 5;
 
     initialiseFoxes();
 
