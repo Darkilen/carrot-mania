@@ -151,7 +151,7 @@ function changeGameState() {
 let noDrawMode = false;
 
 /* currentLevels */
-let currentLevelId = 3;
+let currentLevelId = 1;
 let currentLevel = JSON.parse(JSON.stringify(levels[currentLevelId - 1]));
 let maxLevelCarrots = currentLevel.carrots.length;
 
@@ -425,6 +425,11 @@ function restartLevel() {
     rabbitDirection = 'right';
     rabbitX = currentLevel.rabbit.x;
     rabbitY = currentLevel.rabbit.y;
+    rabbitSprite.image = rabbitWalkRight;
+    rabbitSprite.width = 200;
+    rabbitSprite.height = 40;
+    rabbitSprite.ticksPerFrame = 4;
+    rabbitSprite.numberOfFrames = 5;
   }
 }
 
@@ -512,6 +517,7 @@ function drawRabbit() {
 function moveRabbit() {
   if (!rabbitCanFall()) {
     if (leftPressed && rabbitCanMove && rabbitX > 0 && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
+      rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'left') {
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
@@ -529,6 +535,7 @@ function moveRabbit() {
         reCanMoveRabbit();
       }
     } else if (rightPressed && rabbitCanMove && rabbitX + 1 < NB_COLS && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
+      rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'right') {
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
@@ -546,6 +553,7 @@ function moveRabbit() {
         reCanMoveRabbit();
       }
     } else if (upPressed && rabbitCanMove && rabbitY - 1 >= 0 && thereIsALadder(rabbitX, rabbitY) && !thereIsAPlatform(rabbitX, rabbitY - 1)) {
+      rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'up') {
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
@@ -563,6 +571,7 @@ function moveRabbit() {
         reCanMoveRabbit();
       }
     } else if (downPressed && rabbitCanMove && rabbitY + 1 < NB_ROWS && !thereIsAPlatform(rabbitX, rabbitY + 1)) {
+      rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'down') {
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
@@ -580,6 +589,7 @@ function moveRabbit() {
         reCanMoveRabbit();
       }
     } else if (spacePressed && rabbitCanMove && (rabbitDirection === 'left' || rabbitDirection === 'right')) {
+      rabbitSprite.frameIndex = 0;
       rabbitCanMove = false;
       rabbitIsMoving = true;
       rabbitSprite.ticksPerFrame = 0;
