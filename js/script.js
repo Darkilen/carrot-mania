@@ -155,6 +155,7 @@ let gameState = 'MainTitle';
 /* function that changes the game state */
 function changeGameState() {
   if (gameState === 'MainTitle' && enterPressed) {
+    playGameBtn.style.display = 'none';
     gameState = 'LoadingLevel';
   } else if (gameState === 'Game' && pPressed) {
     gameState = 'Pause';
