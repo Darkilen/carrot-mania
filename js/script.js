@@ -71,6 +71,12 @@ class Sprite {
 let mainTitleImg = new Image();
 mainTitleImg.src = 'assets/main-title.png';
 
+let rulesGameImg = new Image();
+rulesGameImg.src = 'assets/rules.png';
+
+let loadingImg = new Image();
+loadingImg.src = 'assets/loading-level.png';
+
 let bgGameImg = new Image();
 bgGameImg.src = 'assets/bg-game.png';
 
@@ -120,11 +126,15 @@ foxWalkRight.src = 'assets/fox-walk-right.png';
 
 let winGameImg = new Image();
 winGameImg.src = 'assets/win-game.png';
+let cloudImg = new Image();
+cloudImg.src = 'assets/cloud.png';
 let bgWinGameImg = new Image();
 bgWinGameImg.src = 'assets/bg-win-game.png';
 
 let looseGameImg = new Image();
 looseGameImg.src = 'assets/loose-game.png';
+let deadRabbitImg = new Image();
+deadRabbitImg.src = 'assets/dead-rabbit.png';
 let bgLooseGameImg = new Image();
 bgLooseGameImg.src = 'assets/bg-loose-game.png';
 
@@ -160,6 +170,10 @@ function playSound(sound) {
       audio.src = 'audio/win-level.mp3';
       audio.play();
       break;
+    case 'loose':
+      audio.src = 'audio/loose.mp3';
+      audio.play();
+      break;
   }
 }
 
@@ -171,7 +185,7 @@ function playSound(sound) {
 /* PLAY GAME BUTTON */
 let playGameBtn = document.getElementById("play-button");
 playGameBtn.addEventListener("click", () => {
-  gameState = 'LoadingLevel';
+  gameState = 'RulesGame';
   playGameBtn.style.display = 'none';
 })
 
@@ -195,6 +209,8 @@ let gameState = 'MainTitle';
 function changeGameState() {
   if (gameState === 'MainTitle' && enterPressed) {
     playGameBtn.style.display = 'none';
+    gameState = 'RulesGame';
+  } else if (gameState == 'RulesGame' && spacePressed) {
     gameState = 'LoadingLevel';
   }
 }
@@ -365,15 +381,35 @@ function drawMainTitleScreen() {
   }
 }
 
+/* function that draw the game rules */
+function drawRulesGameScreen() {
+  canvas.width = 1200;
+  if (noDrawMode) {
+
+  } else {
+    ctx.drawImage(rulesGameImg, 0, 0, 1200, 680);
+  }
+}
+
 /* function that draws the loading level screen */
 function drawLoadingLevelScreen() {
   canvas.width = 1200;
-  ctx.font = '48px Courier New';
-  ctx.fillStyle = "black";
-  ctx.textAlign = 'Center';
-  let text = `LoadingLevel : ${currentLevelId}`;
-  let measure = ctx.measureText(text);
-  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  if (noDrawMode) {
+    ctx.font = '48px Courier New';
+    ctx.fillStyle = "black";
+    ctx.textAlign = 'Center';
+    let text = `LoadingLevel : ${currentLevelId}`;
+    let measure = ctx.measureText(text);
+    ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  } else {
+    ctx.drawImage(loadingImg, 0, 0, W, H);
+    ctx.font = '30px bloomer';
+    ctx.fillStyle = "white";
+    ctx.textAlign = 'Center';
+    let text2 = `Chargement...`;
+    let measure2 = ctx.measureText(text2);
+    ctx.fillText(text2, W / 2 - measure2.width / 2 - 200, H / 2);
+  }
 }
 
 /* function that draws the game over screen */
@@ -388,6 +424,9 @@ function drawWinGameScreen() {
     ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
   } else {
     ctx.drawImage(bgWinGameImg, 0, 0);
+    for (var i = 0; i < clouds.length; i++) {
+      ctx.drawImage(cloudImg, clouds[i].x, clouds[i].y, clouds[i].w, clouds[i].h);
+    }
     ctx.drawImage(winGameImg, 0, 0, W, H);
   }
 }
@@ -404,6 +443,9 @@ function drawLooseGameScreen() {
     ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
   } else {
     ctx.drawImage(bgLooseGameImg, 0, 0);
+    for (var i = 0; i < deadRabbits.length; i++) {
+      ctx.drawImage(deadRabbitImg, deadRabbits[i].x, deadRabbits[i].y, deadRabbits[i].l, deadRabbits[i].l);
+    }
     ctx.drawImage(looseGameImg, 0, 0, W, H);
   }
 }
@@ -420,14 +462,14 @@ function drawGameInfos() {
     ctx.fillText(textCarrots, 900, 200);
     ctx.fillText(textLives, 900, 300);
   } else {
-    ctx.font = '30px Courier New';
-    ctx.fillStyle = "orange";
+    ctx.font = '30px Arial';
+    ctx.fillStyle = "#f8e01c";
     let textLevel = `${currentLevelId} / ${levels.length}`;
     let textCarrots = `${rabbitCarrots} / ${maxLevelCarrots}`;
     let textLives = `${rabbitLives} / 3`;
-    ctx.fillText(textLevel, 1070, 227);
-    ctx.fillText(textCarrots, 1070, 347);
-    ctx.fillText(textLives, 1070, 472);
+    ctx.fillText(textLevel, 1100, 230);
+    ctx.fillText(textCarrots, 1100, 347);
+    ctx.fillText(textLives, 1100, 480);
   }
 }
 
@@ -488,6 +530,7 @@ function restartLevel() {
   resetPlatforms();
 
   if (rabbitLives === 0) {
+    playSound('loose');
     gameState = 'LooseGame';
   } else {
     rabbitDirection = 'right';
@@ -704,7 +747,7 @@ function rabbitCanFall() {
   if (rabbitCanMove && noPlatformUnderRabbit && noLadderUnderRabbit && noLadderBehindRabbit && noFoxUnderRabbit && rabbitY + 1 < NB_ROWS) {
     rabbitVY = 0.5;
     return true;
-  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit || rabbitY + 1 >= NB_ROWS)) {
+  } else if (rabbitCanMove && (!noPlatformUnderRabbit || !noLadderUnderRabbit || !noFoxUnderRabbit || rabbitY + 1 >= NB_ROWS)) {
     rabbitVY = 0;
     return false;
   }
@@ -931,10 +974,13 @@ class Foxes {
     let noPlatformUnderFox = !thereIsAPlatform(this.foxX, this.foxY + 1);
     let noLadderUnderFox = !thereIsALadder(this.foxX, this.foxY + 1);
     let noLadderBehindFox = !thereIsALadder(this.foxX, this.foxY);
-    if (this.foxCanMove && noPlatformUnderFox && noLadderUnderFox && noLadderBehindFox && this.foxY + 1 < NB_ROWS) {
+    let noRabbitUnderFox = !thereIsARabbit(this.foxX, this.foxY + 1);
+    let noFoxUnderFox = !thereIsAFox(this.foxX, this.foxY + 1);
+
+    if (this.foxCanMove && noPlatformUnderFox && noLadderUnderFox && noLadderBehindFox && noRabbitUnderFox && noFoxUnderFox && this.foxY + 1 < NB_ROWS) {
       this.foxVY = 0.5;
       return true;
-    } else if (this.foxCanMove && (!noPlatformUnderFox || !noLadderUnderFox || this.foxY + 1 >= NB_ROWS)) {
+    } else if (this.foxCanMove && (!noPlatformUnderFox || !noLadderUnderFox || !noRabbitUnderFox || !noFoxUnderFox || this.foxY + 1 >= NB_ROWS)) {
       this.foxVY = 0;
       return false;
     }
@@ -953,6 +999,14 @@ function initialiseFoxes() {
     let fox = new Foxes(currentFox.x, currentFox.y, currentFox.direction);
     foxes.push(fox);
   }
+}
+
+/* function that returns true if there is a rabbit, false if not */
+function thereIsARabbit(x, y) {
+  if (rabbitX === x && rabbitY === y) {
+    return true;
+  }
+  return false;
 }
 
 /* function that draws the foxes on the game */
@@ -977,6 +1031,114 @@ function moveFoxes() {
 
 
 
+/* LOOSE GAME SCREEN */
+let deadRabbits = [];
+initLooseGameScreen();
+
+function initLooseGameScreen() {
+  let deadRabbit = {
+    x: 1100,
+    y: 400,
+    l: 200,
+  }
+  deadRabbits.push(deadRabbit);
+
+  deadRabbit = {
+    x: 24,
+    y: 400,
+    l: 70,
+  }
+  deadRabbits.push(deadRabbit);
+
+  deadRabbit = {
+    x: 1000,
+    y: 30,
+    l: 130,
+  }
+  deadRabbits.push(deadRabbit);
+
+  deadRabbit = {
+    x: 170,
+    y: 50,
+    l: 30,
+  }
+  deadRabbits.push(deadRabbit);
+
+  deadRabbit = {
+    x: 100,
+    y: 30,
+    l: 300,
+  }
+  deadRabbits.push(deadRabbit);
+}
+
+function updateLooseGameScreen() {
+  for (var i = 0; i < deadRabbits.length; i++) {
+    if (deadRabbits[i].l < 100) {
+      deadRabbits[i].y += 2;
+    } else if (deadRabbits[i].l < 200) {
+      deadRabbits[i].y += 4;
+    } else {
+      deadRabbits[i].y += 8;
+    }
+    if (deadRabbits[i].y > H) {
+      deadRabbits[i].y = 0;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+/* WIN GAME SCREEN */
+let clouds = [];
+initWinGameScreen();
+
+function initWinGameScreen() {
+  let cloud = {
+    x: 1000,
+    y: 70,
+    w: 300,
+    h: 300
+  }
+  clouds.push(cloud);
+
+  cloud = {
+    x: 240,
+    y: 70,
+    w: 100,
+    h: 100
+  }
+  clouds.push(cloud);
+
+  cloud = {
+    x: 800,
+    y: 30,
+    w: 130,
+    h: 130
+  }
+  clouds.push(cloud);
+}
+
+function updateWinGameScreen() {
+  clouds[0].x -= 0.2;
+  clouds[1].x -= 0.05;
+  clouds[2].x -= 0.1;
+}
+
+
+
+
+
+
+
+
+
 /* INIT, UPDATE AND ANIMATE */
 /* function that initialises the game */
 function init() {
@@ -989,11 +1151,13 @@ function update() {
 
   if (gameState === 'MainTitle') {
     drawMainTitleScreen();
+  } else if (gameState === 'RulesGame') {
+    drawRulesGameScreen();
   } else if (gameState === 'LoadingLevel') {
     drawLoadingLevelScreen();
     let timeOut = window.setTimeout(() => {
       gameState = 'Game';
-    }, 1000);
+    }, 1500);
   } else if (gameState === 'Game') {
     rabbitEatCarrot();
     detectEnemiesCollision();
@@ -1002,8 +1166,10 @@ function update() {
     drawGameScreen();
     drawGameInfos();
   } else if (gameState === 'WinGame') {
+    updateWinGameScreen();
     drawWinGameScreen();
   } else if (gameState === 'LooseGame') {
+    updateLooseGameScreen();
     drawLooseGameScreen();
   }
 }
