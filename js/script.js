@@ -118,7 +118,23 @@ foxWalkLeft.src = 'assets/fox-walk-left.png';
 let foxWalkRight = new Image();
 foxWalkRight.src = 'assets/fox-walk-right.png';
 
+let winGameImg = new Image();
+winGameImg.src = 'assets/win-game.png';
+let bgWinGameImg = new Image();
+bgWinGameImg.src = 'assets/bg-win-game.png';
 
+let looseGameImg = new Image();
+looseGameImg.src = 'assets/loose-game.png';
+let bgLooseGameImg = new Image();
+bgLooseGameImg.src = 'assets/bg-loose-game.png';
+
+
+/* PLAY GAME BUTTON */
+let playGameBtn = document.getElementById("play-button");
+playGameBtn.addEventListener("click", () => {
+  gameState = 'LoadingLevel';
+  playGameBtn.style.display = 'none';
+})
 
 
 
@@ -263,6 +279,11 @@ document.addEventListener("keydown", () => {
     spacePressed = true;
   } else if (event.key == "x" || event.key == "KeyX") {
     noDrawMode = !noDrawMode;
+    if (playGameBtn.style.display === 'none' && gameState === 'MainTitle') {
+      playGameBtn.style.display = 'inherit';
+    } else {
+      playGameBtn.style.display = 'none';
+    }
   }
 }, false);
 
@@ -304,7 +325,7 @@ function drawMainTitleScreen() {
     ctx.fillText(text2, W / 2 - measure2.width / 2, H / 2 + 70);
   } else {
     canvas.width = 938;
-    ctx.drawImage(mainTitleImg, -3, 0);
+    ctx.drawImage(mainTitleImg, -3, -1, 945, 681);
   }
 }
 
@@ -322,23 +343,33 @@ function drawLoadingLevelScreen() {
 /* function that draws the game over screen */
 function drawWinGameScreen() {
   canvas.width = 1200;
-  ctx.font = '48px Courier New';
-  ctx.fillStyle = "black";
-  ctx.textAlign = 'Center';
-  let text = `You Win !!!`;
-  let measure = ctx.measureText(text);
-  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  if (noDrawMode) {
+    ctx.font = '48px Courier New';
+    ctx.fillStyle = "black";
+    ctx.textAlign = 'Center';
+    let text = `You Win !!!`;
+    let measure = ctx.measureText(text);
+    ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  } else {
+    ctx.drawImage(bgWinGameImg, 0, 0);
+    ctx.drawImage(winGameImg, 0, 0, W, H);
+  }
 }
 
 /* function that draws the loose game screen */
 function drawLooseGameScreen() {
   canvas.width = 1200;
-  ctx.font = '48px Courier New';
-  ctx.fillStyle = "black";
-  ctx.textAlign = 'Center';
-  let text = `You Loose !!!`;
-  let measure = ctx.measureText(text);
-  ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  if (noDrawMode) {
+    ctx.font = '48px Courier New';
+    ctx.fillStyle = "black";
+    ctx.textAlign = 'Center';
+    let text = `You Loose !!!`;
+    let measure = ctx.measureText(text);
+    ctx.fillText(text, W / 2 - measure.width / 2, H / 2);
+  } else {
+    ctx.drawImage(bgLooseGameImg, 0, 0);
+    ctx.drawImage(looseGameImg, 0, 0, W, H);
+  }
 }
 
 /* function that draws the game infos */
