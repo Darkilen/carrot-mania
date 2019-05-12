@@ -129,6 +129,45 @@ let bgLooseGameImg = new Image();
 bgLooseGameImg.src = 'assets/bg-loose-game.png';
 
 
+
+
+
+
+
+
+
+/* GAME SOUNDS */
+let audio = new Audio();
+
+function playSound(sound) {
+  audio.pause();
+  audio.currentTime = 0;
+
+  switch (sound) {
+    case 'jump':
+      audio.src = 'audio/jump.mp3';
+      audio.play();
+      break;
+    case 'eat':
+      audio.src = 'audio/eat.mp3';
+      audio.play();
+      break;
+    case 'hole':
+      audio.src = 'audio/hole.mp3';
+      audio.play();
+      break;
+    case 'win':
+      audio.src = 'audio/win-level.mp3';
+      audio.play();
+      break;
+  }
+}
+
+
+
+
+
+
 /* PLAY GAME BUTTON */
 let playGameBtn = document.getElementById("play-button");
 playGameBtn.addEventListener("click", () => {
@@ -157,10 +196,6 @@ function changeGameState() {
   if (gameState === 'MainTitle' && enterPressed) {
     playGameBtn.style.display = 'none';
     gameState = 'LoadingLevel';
-  } else if (gameState === 'Game' && pPressed) {
-    gameState = 'Pause';
-  } else if (gameState === 'Pause' && pPressed) {
-    gameState = 'Game';
   }
 }
 
@@ -408,6 +443,7 @@ function drawGameGrid() {
 
 /* function that change the level variables */
 function changeLevel() {
+  playSound('win');
   clearPlatformsTimeouts();
   if (levels[currentLevelId] === undefined) {
     gameState = 'WinGame';
@@ -551,6 +587,7 @@ function moveRabbit() {
     if (leftPressed && rabbitCanMove && rabbitX > 0 && !thereIsAPlatform(rabbitX - 1, rabbitY)) {
       rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'left') {
+        playSound('jump');
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
@@ -569,6 +606,7 @@ function moveRabbit() {
     } else if (rightPressed && rabbitCanMove && rabbitX + 1 < NB_COLS && !thereIsAPlatform(rabbitX + 1, rabbitY)) {
       rabbitSprite.frameIndex = 0;
       if (rabbitDirection === 'right') {
+        playSound('jump');
         rabbitSprite.ticksPerFrame = 4;
         rabbitCanMove = false;
         rabbitIsMoving = true;
@@ -621,6 +659,7 @@ function moveRabbit() {
         reCanMoveRabbit();
       }
     } else if (spacePressed && rabbitCanMove && (rabbitDirection === 'left' || rabbitDirection === 'right')) {
+      playSound('hole');
       rabbitSprite.frameIndex = 0;
       rabbitCanMove = false;
       rabbitIsMoving = true;
@@ -716,6 +755,7 @@ function rabbitEatCarrot() {
         return element.x === rabbitX && element.y === rabbitY;
       });
       currentLevel.carrots.splice(pos, 1);
+      playSound('eat');
     }
     if (currentLevel.carrots.length === 0) {
       changeLevel();
@@ -953,10 +993,10 @@ function update() {
     drawLoadingLevelScreen();
     let timeOut = window.setTimeout(() => {
       gameState = 'Game';
-    }, 700);
+    }, 1000);
   } else if (gameState === 'Game') {
-    detectEnemiesCollision();
     rabbitEatCarrot();
+    detectEnemiesCollision();
     moveRabbit();
     moveFoxes();
     drawGameScreen();
