@@ -174,6 +174,10 @@ function playSound(sound) {
       audio.src = 'audio/loose.mp3';
       audio.play();
       break;
+    case 'loose-life':
+      audio.src = 'audio/loose-life.mp3';
+      audio.play();
+      break;
   }
 }
 
@@ -721,6 +725,7 @@ function detectEnemiesCollision() {
   for (let i = 0; i < foxes.length; i++) {
     currentFox = foxes[i];
     if ((rabbitX + 1 > currentFox.foxX && rabbitX + 1 < currentFox.foxX + 1 && rabbitY === currentFox.foxY) || (rabbitX < currentFox.foxX + 1 && rabbitX > currentFox.foxX && rabbitY === currentFox.foxY)) {
+      playSound('loose-life');
       restartLevel();
     }
   }
